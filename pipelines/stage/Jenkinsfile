@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'stage', url: 'https://github.com/your-repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './build.sh'
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    call('test-stage.groovy')
+                }
+            }
+        }
+        stage('Deploy to Stage') {
+            steps {
+                script {
+                    call('deploy-stage.groovy', 'stage')
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/build/*.zip', allowEmptyArchive: true
+        }
+        failure {
+            mail to: 'stage-team@example.com',
+                 subject: 'Stage Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}',
+                 body: 'Check Jenkins for details: ${env.BUILD_URL}'
+        }
+    }
+}
+

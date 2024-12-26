@@ -1,0 +1,38 @@
+
+# Terraform files
+*.tfstate
+*.tfstate.backup
+.terraform/
+terraform.tfvars
+
+# Ansible logs and temporary files
+*.retry
+
+# Python
+*.pyc
+__pycache__/
+
+# Node.js
+node_modules/
+
+# Log files
+*.log
+
+# Backup files
+*.bak
+*.swp
+*.tmp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# SSH keys and credentials
+*.pem
+*.key
+*.crt
+
+# Generated artifacts
+*.zip
+*.tar.gz
+

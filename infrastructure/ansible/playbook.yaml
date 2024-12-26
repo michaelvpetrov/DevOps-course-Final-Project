@@ -1,0 +1,17 @@
+- name: Configure Jenkins Worker Nodes
+  hosts: workers
+  tasks:
+    - name: Install Java
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+    - name: Create Jenkins user
+      user:
+        name: jenkins
+        state: present
+    - name: Configure Jenkins Agent
+      shell: |
+        mkdir -p /var/lib/jenkins
+        chown jenkins:jenkins /var/lib/jenkins
+        echo "Configured Jenkins Agent" > /var/lib/jenkins/agent.info
+

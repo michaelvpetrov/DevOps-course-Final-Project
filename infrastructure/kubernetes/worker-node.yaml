@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins-worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jenkins-worker
+  template:
+    metadata:
+      labels:
+        app: jenkins-worker
+    spec:
+      containers:
+      - name: worker
+        image: jenkins/slave:latest
+        env:
+        - name: JENKINS_URL
+          value: "http://jenkins:8080"
+        - name: JENKINS_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jenkins-secret
+              key: secret
+

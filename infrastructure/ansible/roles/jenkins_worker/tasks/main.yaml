@@ -1,0 +1,11 @@
+- name: Install Java
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Setup Jenkins Agent
+  template:
+    src: agent.config.j2
+    dest: /home/jenkins/agent/config.xml
+  notify: Restart Agent
+

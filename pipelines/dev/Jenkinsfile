@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'dev', url: 'https://github.com/your-repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './build.sh'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './run-tests.sh'
+            }
+        }
+        stage('Deploy to DEV') {
+            steps {
+                sh './deploy.sh --env=dev'
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/build/*.zip', allowEmptyArchive: true
+            junit '**/test-reports/*.xml'
+        }
+        failure {
+            mail to: 'dev-team@example.com',
+                 subject: 'Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}',
+                 body: 'Check Jenkins for details: ${env.BUILD_URL}'
+        }
+    }
+}
+

@@ -1,0 +1,17 @@
+- name: Install Java
+  yum:
+    name: java-1.8.0-openjdk
+    state: present
+
+- name: Install Jenkins
+  shell: |
+    wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+    yum install -y jenkins
+  notify: Start Jenkins
+
+- name: Deploy Jenkins Config
+  template:
+    src: jenkins.config.j2
+    dest: /var/lib/jenkins/config.xml
+

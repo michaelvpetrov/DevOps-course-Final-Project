@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    triggers {
+        cron('H 2 * * *') // Runs every night at 2 AM
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './build.sh'
+            }
+        }
+        stage('Run Nightly Tests') {
+            steps {
+                sh './run-nightly-tests.sh'
+            }
+        }
+        stage('Archive Results') {
+            steps {
+                archiveArtifacts artifacts: '**/nightly-results/*.xml', allowEmptyArchive: true
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Nightly build completed.'
+        }
+        failure {
+            mail to: 'nightly-team@example.com',
+                 subject: 'Nightly Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}',
+                 body: 'Check Jenkins for details: ${env.BUILD_URL}'
+        }
+    }
+}
+

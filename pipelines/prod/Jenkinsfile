@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh './build.sh'
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    call('test-stage.groovy')
+                }
+            }
+        }
+        stage('Approval') {
+            steps {
+                input message: 'Approve deployment to Production?'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                script {
+                    call('deploy-stage.groovy', 'prod')
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/build/*.zip', allowEmptyArchive: true
+        }
+        failure {
+            mail to: 'prod-team@example.com',
+                 subject: 'Production Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}',
+                 body: 'Check Jenkins for details: ${env.BUILD_URL}'
+        }
+    }
+}
+
